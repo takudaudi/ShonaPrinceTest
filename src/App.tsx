@@ -316,6 +316,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-white to-pink-100">
+      {/* Logo Watermark - Rendered at the top */}
+      <LogoWatermark />
+      
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-7xl">
         {/* Header */}
         <header className="mb-8 text-center">
@@ -416,9 +419,6 @@ function App() {
 
       {/* Developer Panel */}
       <DeveloperPanel />
-
-      {/* Logo Watermark */}
-      <LogoWatermark />
       </div>
   )
 }

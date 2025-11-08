@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react"
 import { Code2, Play, CheckCircle2, XCircle, Loader2, GripVertical } from "lucide-react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
-import { Textarea } from "./ui/textarea"
 import { cn } from "../lib/utils"
 import {
   fetchTodos,
@@ -15,7 +14,6 @@ import {
   toggleSubtask,
   deleteSubtask,
 } from "../services/mockApi"
-import type { Todo } from "../types/todo"
 
 interface EndpointTest {
   id: string

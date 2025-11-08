@@ -40,7 +40,7 @@ interface CalendarViewProps {
 
 export const CalendarView = ({
   todos,
-  onToggle,
+  onToggle: _onToggle, // Unused but kept for API consistency
   onDelete,
   onUpdate,
   onAddComment,

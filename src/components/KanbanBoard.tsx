@@ -34,7 +34,7 @@ const columns: { status: TodoStatus; label: string; color: string }[] = [
 
 export const KanbanBoard = ({
   todos,
-  onToggle,
+  onToggle: _onToggle, // Unused but kept for API consistency
   onDelete,
   onUpdate,
   onStatusChange,
