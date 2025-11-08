@@ -14,19 +14,27 @@ const ERROR_RATE = 0.1;
 /**
  * Loads todos from localStorage if available, otherwise returns default mock data
  * This ensures data persistence across page reloads
+ * Handles cases where localStorage might not be available (SSR, private browsing, etc.)
  */
 const loadTodosFromStorage = (): Todo[] => {
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return getDefaultTodos();
+  }
+  
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Validate that stored data is an array
+      // Validate that stored data is an array with items
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed;
       }
     }
   } catch (error) {
     console.error('Error loading todos from localStorage:', error);
+    // If there's an error, return default data
+    return getDefaultTodos();
   }
   // Return default mock data if localStorage is empty or invalid
   return getDefaultTodos();
@@ -35,12 +43,20 @@ const loadTodosFromStorage = (): Todo[] => {
 /**
  * Saves todos to localStorage for persistence
  * Called after every create, update, or delete operation
+ * Handles cases where localStorage might not be available
  */
 const saveTodosToStorage = (todos: Todo[]): void => {
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    console.warn('localStorage is not available, data will not persist');
+    return;
+  }
+  
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   } catch (error) {
     console.error('Error saving todos to localStorage:', error);
+    // Handle quota exceeded or other storage errors gracefully
   }
 };
 
@@ -109,9 +125,10 @@ const getDefaultTodos = (): Todo[] => [
   },
 ];
 
-// Initialize mockTodos from localStorage or default data
-// This ensures data persists across page reloads
-let mockTodos: Todo[] = loadTodosFromStorage();
+// Initialize mockTodos with default data
+// Will be loaded from localStorage when fetchTodos is called
+// This avoids issues with module initialization timing
+let mockTodos: Todo[] = getDefaultTodos();
 
 /**
  * Simulates a network delay using Promise and setTimeout
@@ -150,8 +167,16 @@ export const fetchTodos = async (): Promise<TodosResponse> => {
     throw error;
   }
 
-  // Reload from storage to ensure we have the latest data
+  // Always reload from storage to ensure we have the latest data
+  // This handles the case where localStorage might not have been available at module init
   mockTodos = loadTodosFromStorage();
+
+  // Ensure we always return at least the default todos
+  if (mockTodos.length === 0) {
+    mockTodos = getDefaultTodos();
+    // Save defaults to localStorage for future loads
+    saveTodosToStorage(mockTodos);
+  }
 
   return {
     data: [...mockTodos],
