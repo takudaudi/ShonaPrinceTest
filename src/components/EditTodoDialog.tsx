@@ -107,8 +107,13 @@ export const EditTodoDialog = ({
     return Object.keys(newErrors).length === 0
   }
 
+  /**
+   * Handles the main form submission for editing todo
+   * Only submits if validation passes and not currently loading
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation() // Prevent any nested form submissions from triggering this
     if (validate() && !isLoading) {
       onSave(title.trim(), description.trim(), dueDate || undefined)
     }

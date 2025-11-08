@@ -61,9 +61,11 @@ export const SubtasksSection = ({
   /**
    * Handles subtask form submission
    * Validates subtask before adding
+   * Prevents event propagation to avoid triggering parent form submissions
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation() // Prevent event from bubbling up to parent forms
     if (validateSubtask() && !isAddingSubtask) {
       onAddSubtask(newSubtask.trim())
       setNewSubtask("")
@@ -124,6 +126,14 @@ export const SubtasksSection = ({
                 // Clear error when user starts typing
                 if (subtaskError) {
                   setSubtaskError("")
+                }
+              }}
+              onKeyDown={(e) => {
+                // Prevent Enter key from submitting parent form
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleSubmit(e as any)
                 }
               }}
               disabled={isAddingSubtask}

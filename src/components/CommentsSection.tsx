@@ -58,9 +58,11 @@ export const CommentsSection = ({
   /**
    * Handles comment form submission
    * Validates comment before adding
+   * Prevents event propagation to avoid triggering parent form submissions
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation() // Prevent event from bubbling up to parent forms
     if (validateComment() && !isAddingComment) {
       onAddComment(newComment.trim())
       setNewComment("")
@@ -107,6 +109,14 @@ export const CommentsSection = ({
                 // Clear error when user starts typing
                 if (commentError) {
                   setCommentError("")
+                }
+              }}
+              onKeyDown={(e) => {
+                // Prevent Enter key from submitting parent form
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleSubmit(e as any)
                 }
               }}
               disabled={isAddingComment}
