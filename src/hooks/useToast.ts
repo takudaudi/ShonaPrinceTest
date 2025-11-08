@@ -1,0 +1,52 @@
+import { useState, useCallback } from "react"
+import type { ToastProps, ToastVariant } from "../components/ui/toast"
+
+let toastId = 0
+
+export const useToast = () => {
+  const [toasts, setToasts] = useState<ToastProps[]>([])
+
+  const showToast = useCallback((message: string, variant: ToastVariant = "info", duration = 3000) => {
+    const id = `toast-${toastId++}`
+    const newToast: ToastProps = {
+      id,
+      message,
+      variant,
+      duration,
+      onClose: () => {},
+    }
+
+    setToasts((prev) => [...prev, newToast])
+    return id
+  }, [])
+
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }, [])
+
+  const success = useCallback((message: string, duration?: number) => {
+    return showToast(message, "success", duration)
+  }, [showToast])
+
+  const error = useCallback((message: string, duration?: number) => {
+    return showToast(message, "error", duration)
+  }, [showToast])
+
+  const warning = useCallback((message: string, duration?: number) => {
+    return showToast(message, "warning", duration)
+  }, [showToast])
+
+  const info = useCallback((message: string, duration?: number) => {
+    return showToast(message, "info", duration)
+  }, [showToast])
+
+  return {
+    toasts,
+    success,
+    error,
+    warning,
+    info,
+    removeToast,
+  }
+}
+
