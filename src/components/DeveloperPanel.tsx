@@ -3,6 +3,11 @@ import { Code2, Play, CheckCircle2, XCircle, Loader2, GripVertical } from "lucid
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { cn } from "../lib/utils"
+/**
+ * Import the REAL API functions from mockApi
+ * These are the same functions used by the main app
+ * Testing these endpoints will actually modify the shared localStorage data
+ */
 import {
   fetchTodos,
   createTodo,
@@ -49,16 +54,26 @@ export const DeveloperPanel = () => {
     toggleSubtaskId: "s1",
   })
 
+  /**
+   * Endpoint test definitions
+   * Each test calls the REAL API functions from mockApi.ts
+   * These tests will:
+   * - Actually fetch/create/update/delete todos
+   * - Modify the shared localStorage data
+   * - Show real responses and errors
+   * - Work exactly like the main app's API calls
+   */
   const endpoints: EndpointTest[] = [
     {
       id: "fetchTodos",
       name: "Fetch All Todos",
       method: "GET",
       endpoint: "GET /api/todos",
-      description: "Fetch all to-do items",
+      description: "Fetch all to-do items (uses real fetchTodos function)",
       test: async () => {
         setTestResults((prev) => ({ ...prev, fetchTodos: { status: "loading" } }))
         try {
+          // Calls the REAL fetchTodos function - same one used by the app
           const result = await fetchTodos()
           setTestResults((prev) => ({
             ...prev,
@@ -77,10 +92,11 @@ export const DeveloperPanel = () => {
       name: "Create Todo",
       method: "POST",
       endpoint: "POST /api/todos",
-      description: "Create a new to-do item",
+      description: "Create a new to-do item (uses real createTodo function - will appear in app)",
       test: async () => {
         setTestResults((prev) => ({ ...prev, createTodo: { status: "loading" } }))
         try {
+          // Calls the REAL createTodo function - creates actual todo in localStorage
           const result = await createTodo({
             title: testInputs.createTitle,
             description: testInputs.createDescription,
@@ -89,6 +105,7 @@ export const DeveloperPanel = () => {
             ...prev,
             createTodo: { status: "success", result: JSON.stringify(result, null, 2) },
           }))
+          // Note: The created todo will now appear in the main app!
         } catch (error: any) {
           setTestResults((prev) => ({
             ...prev,
@@ -385,7 +402,7 @@ export const DeveloperPanel = () => {
               </Button>
             </div>
             <p className="text-sm font-medium text-gray-600 mt-2">
-              Test all available API endpoints with mock data
+              Test all available API endpoints with REAL functions. Changes will persist in localStorage and appear in the main app!
             </p>
           </div>
 
