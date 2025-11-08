@@ -2,6 +2,12 @@
 
 A modern, single-page To-Do application built with React, TypeScript, Tailwind CSS, and shadcn/ui components. The application features a neobrutalism design aesthetic with bold borders, vibrant colors, and playful shadows.
 
+## 🌐 Live Application
+
+**Live Demo**: [https://shona-prince-test.vercel.app](https://shona-prince-test.vercel.app)
+
+Visit the live application to see it in action!
+
 ## Features
 
 ### Core Functionality
@@ -65,6 +71,47 @@ A modern, single-page To-Do application built with React, TypeScript, Tailwind C
 
 4. **Open your browser**
    Navigate to `http://localhost:5173` (or the port shown in your terminal)
+
+## 🐳 Docker Installation
+
+The application can be run using Docker, ensuring it works consistently across all machines regardless of the local environment.
+
+### Prerequisites
+- Docker (v20.10 or higher)
+- Docker Compose (v2.0 or higher) - Optional but recommended
+
+### Using Docker
+
+1. **Build and run with Docker**
+   ```bash
+   docker build -t shona-prince-app .
+   docker run -p 3000:80 shona-prince-app
+   ```
+
+2. **Using Docker Compose (Recommended)**
+   ```bash
+   docker-compose up
+   ```
+
+3. **Open your browser**
+   Navigate to `http://localhost:3000`
+
+### Docker Commands
+
+- **Build the image**: `docker build -t shona-prince-app .`
+- **Run the container**: `docker run -p 3000:80 shona-prince-app`
+- **Run in detached mode**: `docker run -d -p 3000:80 shona-prince-app`
+- **Stop the container**: `docker stop <container-id>`
+- **View running containers**: `docker ps`
+- **View logs**: `docker logs <container-id>`
+
+### Docker Compose Commands
+
+- **Start services**: `docker-compose up`
+- **Start in detached mode**: `docker-compose up -d`
+- **Stop services**: `docker-compose down`
+- **Rebuild and start**: `docker-compose up --build`
+- **View logs**: `docker-compose logs -f`
 
 ## Available Scripts
 
