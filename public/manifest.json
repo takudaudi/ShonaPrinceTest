@@ -1,0 +1,22 @@
+{
+  "name": "To-Do App - Shona Prince Technologies",
+  "short_name": "To-Do App",
+  "description": "A modern, feature-rich To-Do application for managing tasks with Kanban boards, calendar views, comments, and subtasks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FEF3C7",
+  "theme_color": "#FBBF24",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}
+

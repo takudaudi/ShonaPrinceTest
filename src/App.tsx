@@ -320,12 +320,12 @@ function App() {
       <LogoWatermark />
       
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Header */}
-        <header className="mb-8 text-center">
+        {/* Header - Semantic HTML for SEO */}
+        <header className="mb-8 text-center" role="banner">
           <h1 className="text-5xl sm:text-6xl font-black text-black uppercase mb-4 tracking-tight">
             To-Do App
           </h1>
-          <p className="text-lg sm:text-xl font-bold text-gray-700">
+          <p className="text-lg sm:text-xl font-bold text-gray-700" role="doc-subtitle">
             Manage your tasks with style
           </p>
         </header>
@@ -349,8 +349,8 @@ function App() {
           <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
         </div>
 
-        {/* Todo Views */}
-      <div>
+        {/* Todo Views - Semantic main content area */}
+      <main role="main">
           <h2 className="text-3xl font-black text-black uppercase mb-6">
             Your To-Dos
           </h2>
@@ -408,7 +408,7 @@ function App() {
               deletingSubtaskIds={deletingSubtaskIds}
             />
           )}
-        </div>
+        </main>
       </div>
 
       {/* Toast Container */}
