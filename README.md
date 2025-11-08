@@ -70,7 +70,7 @@ Visit the live application to see it in action!
    ```
 
 4. **Open your browser**
-   Navigate to `http://localhost:5173` (or the port shown in your terminal)
+   Navigate to `http://localhost:5173` (Vite's default port, or the port shown in your terminal)
 
 ## 🐳 Docker Installation
 
@@ -94,7 +94,7 @@ The application can be run using Docker, ensuring it works consistently across a
    ```
 
 3. **Open your browser**
-   Navigate to `http://localhost:3000`
+   Navigate to `http://localhost:3000` (Docker maps host port 3000 to container port 80)
 
 ### Docker Commands
 
@@ -113,11 +113,17 @@ The application can be run using Docker, ensuring it works consistently across a
 - **Rebuild and start**: `docker-compose up --build`
 - **View logs**: `docker-compose logs -f`
 
+## Port Configuration
+
+- **Development Mode** (`npm run dev`): Port **5173** (Vite default)
+- **Docker Mode**: Port **3000** (host) → Port **80** (container/nginx)
+- **Preview Mode** (`npm run preview`): Port **4173** (Vite default)
+
 ## Available Scripts
 
-- `npm run dev` - Start the development server
+- `npm run dev` - Start the development server (port 5173)
 - `npm run build` - Build the application for production
-- `npm run preview` - Preview the production build locally
+- `npm run preview` - Preview the production build locally (port 4173)
 - `npm run lint` - Run ESLint to check code quality
 
 ## Project Structure
