@@ -55,6 +55,10 @@ export const KanbanBoard = ({
   const [draggedTodo, setDraggedTodo] = useState<string | null>(null)
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  // Touch drag state for mobile support
+  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null)
+  const [touchDraggedTodo, setTouchDraggedTodo] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false) // Track if user is actually dragging
 
   if (isLoading) {
     return (
@@ -64,19 +68,115 @@ export const KanbanBoard = ({
     )
   }
 
+  /**
+   * Handles drag start for mouse events (desktop)
+   */
   const handleDragStart = (todoId: string) => {
     setDraggedTodo(todoId)
   }
 
+  /**
+   * Handles drag over for mouse events (desktop)
+   */
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
   }
 
+  /**
+   * Handles drop for mouse events (desktop)
+   */
   const handleDrop = (status: TodoStatus) => {
     if (draggedTodo) {
       onStatusChange(draggedTodo, status)
       setDraggedTodo(null)
     }
+  }
+
+  /**
+   * Handles touch start for mobile drag-and-drop
+   * Records initial touch position to detect if user is dragging or tapping
+   */
+  const handleTouchStart = (e: React.TouchEvent, todoId: string) => {
+    const touch = e.touches[0]
+    setTouchStartPos({ x: touch.clientX, y: touch.clientY })
+    setTouchDraggedTodo(todoId)
+    setIsDragging(false) // Reset dragging state
+  }
+
+  /**
+   * Handles touch move for mobile drag-and-drop
+   * Detects if user is actually dragging (moved more than 10px) vs just tapping
+   */
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchDraggedTodo || !touchStartPos) return
+    
+    const touch = e.touches[0]
+    const deltaX = Math.abs(touch.clientX - touchStartPos.x)
+    const deltaY = Math.abs(touch.clientY - touchStartPos.y)
+    
+    // If moved more than 10px, consider it a drag
+    if (deltaX > 10 || deltaY > 10) {
+      setIsDragging(true)
+      // Prevent scrolling while dragging
+      e.preventDefault()
+    }
+  }
+
+  /**
+   * Handles touch end for mobile drag-and-drop
+   * Determines which column the item was dropped on based on touch position
+   * Only moves the card if user was actually dragging, not just tapping
+   */
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchDraggedTodo || !touchStartPos) {
+      setTouchDraggedTodo(null)
+      setTouchStartPos(null)
+      setIsDragging(false)
+      return
+    }
+
+    const todoId = touchDraggedTodo
+
+    // Only process drop if user was actually dragging
+    if (isDragging) {
+      const touch = e.changedTouches[0]
+      const element = document.elementFromPoint(touch.clientX, touch.clientY)
+      
+      // Find the column container by traversing up the DOM tree
+      let columnElement = element
+      while (columnElement && !columnElement.getAttribute('data-column-status')) {
+        columnElement = columnElement.parentElement
+      }
+
+      if (columnElement) {
+        const status = columnElement.getAttribute('data-column-status') as TodoStatus
+        if (status && (status === 'todo' || status === 'in-progress' || status === 'done')) {
+          // Only change status if dropping in a different column
+          const currentTodo = todos.find(t => t.id === todoId)
+          if (currentTodo && currentTodo.status !== status) {
+            onStatusChange(todoId, status)
+          }
+        }
+      }
+      
+      // Prevent click event from firing after drag
+      e.preventDefault()
+      e.stopPropagation()
+    } else {
+      // If it was just a tap (not a drag), open the edit dialog
+      // Use setTimeout to ensure state is cleared first
+      setTimeout(() => {
+        const todo = todos.find(t => t.id === todoId)
+        if (todo) {
+          setEditingTodo(todo)
+          setIsEditDialogOpen(true)
+        }
+      }, 0)
+    }
+
+    setTouchDraggedTodo(null)
+    setTouchStartPos(null)
+    setIsDragging(false)
   }
 
   const getTodosByStatus = (status: TodoStatus) => {
@@ -91,6 +191,7 @@ export const KanbanBoard = ({
           <div
             key={column.status}
             className="flex flex-col"
+            data-column-status={column.status}
             onDragOver={handleDragOver}
             onDrop={() => handleDrop(column.status)}
           >
@@ -123,12 +224,18 @@ export const KanbanBoard = ({
                     key={todo.id}
                     draggable
                     onDragStart={() => handleDragStart(todo.id)}
-                    className="cursor-move"
+                    onTouchStart={(e) => handleTouchStart(e, todo.id)}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className="cursor-move touch-none select-none"
                   >
                     <div
                       onClick={() => {
-                        setEditingTodo(todo)
-                        setIsEditDialogOpen(true)
+                        // Only open dialog if not dragging (mobile) or if it's a click (desktop)
+                        if (!isDragging && !touchDraggedTodo) {
+                          setEditingTodo(todo)
+                          setIsEditDialogOpen(true)
+                        }
                       }}
                       className="rounded-lg border-4 border-black bg-white p-4 neobrutalism-sm hover:shadow-[6px_6px_0px_0px_#000] hover:scale-105 transition-all cursor-pointer"
                     >
